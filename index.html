@@ -3,238 +3,122 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Chat</title>
+  <title>Login - Project Chat</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #36393f;
+      background: #2f3136;
       color: white;
       display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100vh;
     }
-
-    .app {
-      display: flex;
-      width: 100%;
-    }
-
-    .sidebar {
-      width: 220px;
-      background-color: #2f3136;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .chat {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background-color: #36393f;
-      padding: 10px;
-    }
-
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
-
-    .message {
-      background: #40444b;
-      margin: 5px 0;
-      padding: 8px 12px;
-      border-radius: 8px;
-    }
-
-    .message strong {
-      color: #7289da;
-    }
-
-    .input-area {
-      display: flex;
-    }
-
-    .input-area input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-    }
-
-    .input-area button {
-      padding: 10px 15px;
-      margin-left: 8px;
-      border: none;
-      border-radius: 6px;
-      background-color: #7289da;
-      color: white;
-      cursor: pointer;
-    }
-
-    .input-area button:hover {
-      background-color: #5b6eae;
-    }
-
-    .news-panel {
+    .login-box {
+      background: #36393f;
+      padding: 30px;
+      border-radius: 10px;
       width: 300px;
-      background-color: #2f3136;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
-
-    .news-panel h3 {
-      margin: 0;
+    h2 {
       color: #fff;
-      font-size: 18px;
+      margin-bottom: 20px;
     }
-
-    .section {
-      flex: 1;
-      background: #202225;
-      border-radius: 8px;
-      overflow-y: auto;
+    input {
+      width: 90%;
       padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 5px;
     }
-
-    a {
-      color: #7289da;
-      text-decoration: none;
+    button {
+      width: 95%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #5865f2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #4752c4;
+    }
+    #message {
+      color: #ffcc00;
+      margin-top: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div>
-        <h3>Project Chat</h3>
-        <p id="usernameDisplay" style="color:#fff; font-weight:bold; margin-top:10px;">Loading user...</p>
-      </div>
-      <button id="logoutBtn" style="margin-top:20px; background:#ff4b4b; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">Logout</button>
-    </div>
-
-    <!-- Chat -->
-    <div class="chat">
-      <div class="messages" id="messages"></div>
-      <div class="input-area">
-        <input type="text" id="messageInput" placeholder="Type your message...">
-        <button id="sendBtn">Send</button>
-      </div>
-    </div>
-
-    <!-- News & Trending Panel -->
-    <div class="news-panel">
-      <div class="section">
-        <h3>Latest News</h3>
-        <div id="news">
-          <div style="margin-bottom:10px;">
-            <strong>Breaking: AI Technology Breakthrough</strong>
-            <p style="font-size: 13px;">A new AI model has been launched that can produce realistic art in seconds.</p>
-          </div>
-          <div style="margin-bottom:10px;">
-            <strong>Global Markets Update</strong>
-            <p style="font-size: 13px;">Stocks surge as technology sector shows strong recovery.</p>
-          </div>
-          <div style="margin-bottom:10px;">
-            <strong>SpaceX Launch Success</strong>
-            <p style="font-size: 13px;">SpaceX successfully launches and deploys new satellite network.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Trending Streams</h3>
-        <div id="streams">
-          <div style="margin-bottom:10px;">
-            <strong><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Top Gaming Stream 1</a></strong>
-            <p style="font-size: 13px;">Watch live gaming adventures in this trending stream.</p>
-          </div>
-          <div style="margin-bottom:10px;">
-            <strong><a href="https://www.twitch.tv/" target="_blank">Trending Music Stream</a></strong>
-            <p style="font-size: 13px;">Join live music performances from top streamers.</p>
-          </div>
-          <div style="margin-bottom:10px;">
-            <strong><a href="https://www.youtube.com/" target="_blank">Tech Reviews Live</a></strong>
-            <p style="font-size: 13px;">Watch the latest tech gadgets reviewed live.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="login-box">
+    <h2>Welcome</h2>
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+    <p id="message"></p>
   </div>
 
-  <!-- Firebase Chat + Auth -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
 
-    // 🔧 Your Firebase config
-   const firebaseConfig = {
-  apiKey: "AIzaSyAF78wb9_OSrfPc93iaFmmNN-CZY03sJMQ",
-  authDomain: "project-java0001.firebaseapp.com",
-  databaseURL: "https://project-java0001-default-rtdb.firebaseio.com",
-  projectId: "project-java0001",
-  storageBucket: "project-java0001.firebasestorage.app",
-  messagingSenderId: "246764397103",
-  appId: "1:246764397103:web:ae0c23a62b60ee124adcda"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+  <script>
+    // ✅ Your Firebase Configuration (fixed storage bucket)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAF78wb9_OSrfPc93iaFmmNN-CZY03sJMQ",
+      authDomain: "project-java0001.firebaseapp.com",
+      databaseURL: "https://project-java0001-default-rtdb.firebaseio.com",
+      projectId: "project-java0001",
+      storageBucket: "project-java0001.appspot.com",
+      messagingSenderId: "246764397103",
+      appId: "1:246764397103:web:ae0c23a62b60ee124adcda"
+    };
 
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
+    // ✅ Login Function
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      document.getElementById('message').innerText = "Logging in...";
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          document.getElementById('message').innerText = "Login successful!";
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          document.getElementById('message').innerText = error.message;
+        });
+    }
 
-    // 🧠 Authentication Check
-    onAuthStateChanged(auth, (user) => {
+    // ✅ Sign-Up Function
+    function signup() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      document.getElementById('message').innerText = "Creating account...";
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          document.getElementById('message').innerText = "Account created! You can log in now.";
+        })
+        .catch((error) => {
+          document.getElementById('message').innerText = error.message;
+        });
+    }
+
+    // ✅ Auto-redirect if already logged in
+    auth.onAuthStateChanged((user) => {
       if (user) {
-        document.getElementById("usernameDisplay").innerText = user.email;
-      } else {
-        window.location.href = "login.html";
+        window.location.href = "index.html";
       }
-    });
-
-    // 🔴 Logout
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "login.html";
-      });
-    });
-
-    // 💬 Chat Logic
-    const messagesRef = ref(db, "messages");
-    const messagesDiv = document.getElementById("messages");
-    const messageInput = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
-
-    sendBtn.addEventListener("click", () => {
-      const message = messageInput.value.trim();
-      if (message === "") return;
-
-      const user = auth.currentUser;
-      push(messagesRef, {
-        name: user ? user.email : "Guest",
-        text: message,
-        time: new Date().toLocaleTimeString()
-      });
-      messageInput.value = "";
-    });
-
-    onChildAdded(messagesRef, (snapshot) => {
-      const msg = snapshot.val();
-      const div = document.createElement("div");
-      div.classList.add("message");
-      div.innerHTML = `<strong>${msg.name}</strong>: ${msg.text} <br><span style="font-size:11px;color:gray;">${msg.time}</span>`;
-      messagesDiv.appendChild(div);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
   </script>
 </body>
 </html>
-
