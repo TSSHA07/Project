@@ -1,7 +1,7 @@
 <script type="module">
-  // Import the functions you need from the SDKs you need
+  // Import the functions you need from the SDKs
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
   import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
   const firebaseConfig = {
@@ -9,7 +9,7 @@
     authDomain: "project-java0001.firebaseapp.com",
     databaseURL: "https://project-java0001-default-rtdb.firebaseio.com",
     projectId: "project-java0001",
-    storageBucket: "project-java0001.appspot.com",   // ✅ make sure it’s .appspot.com
+    storageBucket: "project-java0001.appspot.com",
     messagingSenderId: "246764397103",
     appId: "1:246764397103:web:ae0c23a62b60ee124adcda"
   };
@@ -19,38 +19,44 @@
   const auth = getAuth(app);
   const database = getDatabase(app);
 
-  // --- Sign Up ---
-  document.getElementById('signup').addEventListener('click', () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+  // ✅ Force session-only persistence
+  setPersistence(auth, browserSessionPersistence)
+    .then(() => {
+      // --- Sign Up ---
+      document.getElementById('signup').addEventListener('click', () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        set(ref(database, 'users/' + user.uid), {
-          email: email
-        });
-        alert("Account created successfully!");
-        window.location.href = "index.html"; // redirect after signup
-      })
-      .catch((error) => {
-        alert(error.message);
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            set(ref(database, 'users/' + user.uid), {
+              email: email
+            });
+            alert("Account created successfully!");
+            window.location.href = "index.html"; // redirect after signup
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
       });
-  });
 
-  // --- Log In ---
-  document.getElementById('login').addEventListener('click', () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+      // --- Log In ---
+      document.getElementById('login').addEventListener('click', () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        alert("Logged in successfully!");
-        window.location.href = "index.html"; // redirect after login
-      })
-      .catch((error) => {
-        alert(error.message);
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            alert("Logged in successfully!");
+            window.location.href = "index.html"; // redirect after login
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
       });
-  });
+    })
+    .catch((error) => {
+      console.error("Persistence error:", error);
+    });
 </script>
-
