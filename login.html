@@ -1,62 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Project AURA</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #2f3136;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.login-box {
+  background: #36393f;
+  padding: 30px;
+  border-radius: 10px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+h2 { color: #fff; margin-bottom: 20px; }
+input {
+  width: 90%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 5px;
+}
+button {
+  width: 95%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #5865f2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+button:hover { background: #4752c4; }
+#message { color: #ffcc00; margin-top: 10px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="login-box">
+  <h2>Project AURA</h2>
+  <input type="email" id="email" placeholder="Email" required><br>
+  <input type="password" id="password" placeholder="Password" required><br>
+  <button id="login">Login</button>
+  <button id="signup">Sign Up</button>
+  <p id="message"></p>
+</div>
+
+<!-- Firebase SDKs -->
 <script type="module">
-  // Import the functions you need from the SDKs
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, setPersistence, browserSessionPersistence, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAF78wb9_OSrfPc93iaFmmNN-CZY03sJMQ",
-    authDomain: "project-java0001.firebaseapp.com",
-    databaseURL: "https://project-java0001-default-rtdb.firebaseio.com",
-    projectId: "project-java0001",
-    storageBucket: "project-java0001.appspot.com",
-    messagingSenderId: "246764397103",
-    appId: "1:246764397103:web:ae0c23a62b60ee124adcda"
-  };
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyAF78wb9_OSrfPc93iaFmmNN-CZY03sJMQ",
+  authDomain: "project-java0001.firebaseapp.com",
+  projectId: "project-java0001",
+  storageBucket: "project-java0001.firebasestorage.app",
+  messagingSenderId: "246764397103",
+  appId: "1:246764397103:web:ae0c23a62b60ee124adcda",
+  databaseURL: "https://project-java0001-default-rtdb.firebaseio.com/"
+};
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const database = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-  // ✅ Force session-only persistence
-  setPersistence(auth, browserSessionPersistence)
+// ✅ Session-only persistence
+setPersistence(auth, browserSessionPersistence);
+
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const messageP = document.getElementById('message');
+const loginBtn = document.getElementById('login');
+const signupBtn = document.getElementById('signup');
+
+// Redirect if already logged in
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.location.href = "index.html";
+  }
+});
+
+// Login
+loginBtn.addEventListener('click', () => {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  messageP.innerText = "Logging in...";
+
+  signInWithEmailAndPassword(auth, email, password)
     .then(() => {
-      // --- Sign Up ---
-      document.getElementById('signup').addEventListener('click', () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        createUserWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            const user = userCredential.user;
-            set(ref(database, 'users/' + user.uid), {
-              email: email
-            });
-            alert("Account created successfully!");
-            window.location.href = "index.html"; // redirect after signup
-          })
-          .catch((error) => {
-            alert(error.message);
-          });
-      });
-
-      // --- Log In ---
-      document.getElementById('login').addEventListener('click', () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        signInWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            alert("Logged in successfully!");
-            window.location.href = "index.html"; // redirect after login
-          })
-          .catch((error) => {
-            alert(error.message);
-          });
-      });
+      messageP.innerText = "Login successful!";
+      window.location.href = "index.html";
     })
     .catch((error) => {
-      console.error("Persistence error:", error);
+      messageP.innerText = error.message;
     });
+});
+
+// Sign up
+signupBtn.addEventListener('click', () => {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  messageP.innerText = "Creating account...";
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      // Save user in DB
+      set(ref(db, 'users/' + user.uid), { email: email });
+      messageP.innerText = "Account created! Logging in...";
+      window.location.href = "index.html";
+    })
+    .catch((error) => {
+      messageP.innerText = error.message;
+    });
+});
 </script>
+
+</body>
+</html>
+
