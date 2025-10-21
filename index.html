@@ -131,6 +131,16 @@ body {
   border-radius: 8px;
   overflow-y: auto;
 }
+#logoutBtn {
+  background-color: #ff5555;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-left: 10px;
+  cursor: pointer;
+  border: none;
+  color: white;
+}
+#logoutBtn:hover { opacity: 0.9; }
 </style>
 </head>
 <body>
@@ -149,7 +159,7 @@ body {
     <div class="profile">
       <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Heno" alt="Profile" />
       <div>
-        <strong id="usernameDisplay">Heno</strong>
+        <strong id="usernameDisplay">User</strong>
         <p style="font-size: 12px; opacity: 0.8;">Online 🟢</p>
       </div>
     </div>
@@ -159,10 +169,10 @@ body {
   <div class="chat">
     <div class="chat-header">
       <h3># general</h3>
+      <button id="logoutBtn">Logout</button>
     </div>
     <div class="messages"></div>
     <div class="input-area">
-      <input type="text" id="usernameInput" placeholder="Enter your name" style="width: 150px; margin-right: 10px;" />
       <input type="text" id="messageInput" placeholder="Type a message..." />
       <button id="sendBtn">Send</button>
     </div>
@@ -211,7 +221,9 @@ body {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAF78wb9_OSrfPc93iaFmmNN-CZY03sJMQ",
   authDomain: "project-java0001.firebaseapp.com",
@@ -224,24 +236,40 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const chatRef = ref(db, "messages");
+const auth = getAuth(app);
 
+// Redirect to login if not logged in
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    document.getElementById("usernameDisplay").innerText = user.email;
+  }
+});
+
+// Logout button
+const logoutBtn = document.getElementById("logoutBtn");
+logoutBtn.addEventListener("click", () => {
+  signOut(auth).then(() => window.location.href = "login.html");
+});
+
+// Auto logout on tab close
+window.addEventListener("beforeunload", () => {
+  signOut(auth);
+});
+
+// Chat functionality
+const chatRef = ref(db, "messages");
 const sendBtn = document.getElementById("sendBtn");
 const input = document.getElementById("messageInput");
-const usernameInput = document.getElementById("usernameInput");
-const usernameDisplay = document.getElementById("usernameDisplay");
 const messages = document.querySelector(".messages");
-
-usernameInput.addEventListener("input", () => {
-  usernameDisplay.innerText = usernameInput.value || "Heno";
-});
 
 sendBtn.addEventListener("click", sendMessage);
 input.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 
 function sendMessage() {
+  const user = auth.currentUser ? auth.currentUser.email : "Anonymous";
   const text = input.value.trim();
-  const user = usernameInput.value.trim() || "Heno";
   if (!text) return;
 
   const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -249,6 +277,7 @@ function sendMessage() {
   input.value = "";
 }
 
+// Listen for new messages
 onChildAdded(chatRef, (snapshot) => {
   const msgData = snapshot.val();
   const msg = document.createElement("div");
