@@ -1,65 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login / Signup</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> AURA </title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #202225;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .container {
-      background: #2f3136;
-      padding: 2rem;
-      border-radius: 10px;
-      width: 300px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 5px;
-      outline: none;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      background-color: #5865f2;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button:hover {
-      background-color: #4752c4;
-    }
+    body { background-color: #2f3136; color: white; font-family: Arial, sans-serif; }
+    .chat-container { display: flex; height: 100vh; }
+    .sidebar { width: 300px; background: #36393f; padding: 20px; overflow-y: auto; }
+    .main-chat { flex: 1; display: flex; flex-direction: column; }
+    .messages { flex: 1; padding: 20px; overflow-y: auto; }
+    .message-input { display: flex; padding: 10px; background: #40444b; }
+    .message-input input { flex: 1; padding: 10px; border-radius: 5px; border: none; margin-right: 10px; }
+    .message-input button { padding: 10px 20px; border: none; border-radius: 5px; background: #5865f2; color: white; cursor: pointer; }
+    .news { margin-top: 20px; }
+    .news h3 { font-weight: bold; margin-bottom: 10px; }
+    .news-item { margin-bottom: 10px; font-size: 14px; color: #ccc; cursor: pointer; }
+    .news-item:hover { color: #fff; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Aura</h2>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button id="login">Login</button>
-    <button id="signup">Sign Up</button>
+  <div class="chat-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2 class="text-xl font-bold mb-4">Hello, <span id="userName"></span></h2>
+
+      <!-- Example Channels -->
+      <div class="mb-6">
+        <p class="font-bold mb-2">Channels</p>
+        <div># general</div>
+        <div># random</div>
+      </div>
+
+      <!-- News / Trending -->
+      <div class="news">
+        <h3>News</h3>
+        <div class="news-item">Breaking: New Tech Released</div>
+        <div class="news-item">Market Updates Today</div>
+        <div class="news-item">Sports Highlights</div>
+
+        <h3 class="mt-4">Trending</h3>
+        <div class="news-item">#WebDevelopment</div>
+        <div class="news-item">#Gaming</div>
+        <div class="news-item">#AI</div>
+      </div>
+    </div>
+
+    <!-- Main Chat -->
+    <div class="main-chat">
+      <div class="messages" id="messages">
+        <!-- Chat messages will appear here -->
+      </div>
+
+      <div class="message-input">
+        <input type="text" id="messageInput" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
     // ✅ Firebase Config
     const firebaseConfig = {
@@ -72,40 +77,55 @@
       appId: "1:246764397103:web:ae0c23a62b60ee124adcda"
     };
 
-    // ✅ Initialize Firebase *before* using auth
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const database = getDatabase(app);
+    const db = getDatabase(app);
 
-    // ✅ Sign Up
-    document.getElementById('signup').addEventListener('click', async () => {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    let currentUser = null;
 
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        await set(ref(database, 'users/' + user.uid), { email });
-        alert('Account created successfully!');
-        window.location.href = "index.html"; // redirect after signup
-      } catch (error) {
-        alert(error.message);
+    // ✅ Check if user is logged in
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById("userName").textContent = user.email;
+        loadMessages();
+      } else {
+        // redirect to login if not signed in
+        window.location.href = "login.html";
       }
     });
 
-    // ✅ Log In
-    document.getElementById('login').addEventListener('click', async () => {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    // ✅ Send message
+    function sendMessage() {
+      const msgInput = document.getElementById("messageInput");
+      const text = msgInput.value.trim();
+      if (text === "" || !currentUser) return;
 
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert('Login successful!');
-        window.location.href = "index.html"; // redirect after login
-      } catch (error) {
-        alert(error.message);
-      }
-    });
+      push(ref(db, "messages"), {
+        sender: currentUser.email,
+        text: text,
+        timestamp: Date.now()
+      });
+
+      msgInput.value = "";
+    }
+
+    // ✅ Load messages
+    function loadMessages() {
+      const messagesRef = ref(db, "messages");
+      const messagesDiv = document.getElementById("messages");
+      messagesDiv.innerHTML = ""; // clear existing messages
+
+      onChildAdded(messagesRef, (data) => {
+        const msg = data.val();
+        const div = document.createElement("div");
+        div.innerHTML = `<strong>${msg.sender}:</strong> ${msg.text}`;
+        messagesDiv.appendChild(div);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      });
+    }
   </script>
 </body>
 </html>
+
