@@ -54,6 +54,89 @@ body {
 .login-box button:hover { background: #4752c4; }
 #message { color: #ffcc00; margin-top: 10px; font-size: 14px; }
 
+/* Username Popup */
+#usernamePrompt {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+.username-box {
+  background: #36393f;
+  padding: 25px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+.username-box input {
+  width: 90%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+.username-box button {
+  padding: 8px 15px;
+  background: #5865f2;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+.username-box button:hover { background: #4752c4; }
+
+/* Profile Modal */
+#profileModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
+}
+.profile-box {
+  background: #36393f;
+  padding: 25px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+.profile-box img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #5865f2;
+  margin-bottom: 10px;
+}
+.profile-box input {
+  width: 90%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+.profile-box button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+#updateUsernameBtn { background: #5865f2; }
+#updateUsernameBtn:hover { background: #4752c4; }
+#closeProfileModal { background: #ff5555; margin-top: 10px; }
+#closeProfileModal:hover { opacity: 0.9; }
+
 /* App Layout */
 .app { display: flex; height: 100vh; display: none; }
 .sidebar {
@@ -68,7 +151,7 @@ body {
 .servers ul { list-style: none; padding: 0; }
 .servers li { margin: 10px 0; cursor: pointer; padding: 8px; border-radius: 6px; transition: 0.3s; }
 .servers li:hover { background-color: #5865f2; color: white; }
-.profile { background-color: #36393f; padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px; }
+.profile { background-color: #36393f; padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
 .profile img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #5865f2; }
 
 .chat {
@@ -116,6 +199,27 @@ body {
   </div>
 </div>
 
+<!-- Username Prompt -->
+<div id="usernamePrompt">
+  <div class="username-box">
+    <h3>Set Your Username</h3>
+    <input type="text" id="newUsername" placeholder="Enter username" required>
+    <button id="saveUsername">Save</button>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal">
+  <div class="profile-box">
+    <img id="profileModalImg" src="https://api.dicebear.com/7.x/adventurer/svg?seed=User" alt="Avatar">
+    <h3 id="profileModalUsername">Username</h3>
+    <p id="profileModalEmail" style="color:#ccc; font-size:14px;">Email</p>
+    <input type="text" id="profileNewUsername" placeholder="Change username">
+    <button id="updateUsernameBtn">Update</button>
+    <button id="closeProfileModal">Close</button>
+  </div>
+</div>
+
 <!-- Main App -->
 <div class="app">
   <div class="sidebar">
@@ -126,10 +230,11 @@ body {
         <li>🎮 Gaming</li>
         <li>💻 Coding</li>
         <li>🎧 Music</li>
+        <li>💬 Direct Message</li>
       </ul>
     </div>
     <div class="profile">
-      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=User" alt="Profile" />
+      <img id="profileImg" src="https://api.dicebear.com/7.x/adventurer/svg?seed=User" alt="Profile" />
       <div>
         <strong id="usernameDisplay">User</strong>
         <p style="font-size: 12px; opacity: 0.8;">Online 🟢</p>
@@ -153,47 +258,32 @@ body {
     <div class="section">
       <h3>Latest News</h3>
       <div id="news" style="padding: 10px; overflow-y: auto; height: 200px; background: #1e1e1e;">
-        <div style="margin-bottom:10px;">
-          <strong>Breaking: AI Technology Breakthrough</strong>
-          <p style="font-size: 13px;">A new AI model has been launched that can produce realistic art in seconds.</p>
-        </div>
-        <div style="margin-bottom:10px;">
-          <strong>Global Markets Update</strong>
-          <p style="font-size: 13px;">Stocks surge as technology sector shows strong recovery.</p>
-        </div>
-        <div style="margin-bottom:10px;">
-          <strong>SpaceX Launch Success</strong>
-          <p style="font-size: 13px;">SpaceX successfully launches and deploys new satellite network.</p>
-        </div>
+        <div><strong>AI Breakthrough</strong><p style="font-size: 13px;">New AI model can produce realistic art in seconds.</p></div>
+        <div><strong>Stock Market Update</strong><p style="font-size: 13px;">Tech stocks soar after innovation surge.</p></div>
       </div>
     </div>
     <div class="section">
       <h3>Trending Streams</h3>
       <div id="streams" style="padding: 10px; overflow-y: auto; height: 200px; background: #1e1e1e;">
-        <div style="margin-bottom:10px;">
-          <strong><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" style="color:white;">Top Gaming Stream 1</a></strong>
-          <p style="font-size: 13px;">Watch live gaming adventures in this trending stream.</p>
-        </div>
-        <div style="margin-bottom:10px;">
-          <strong><a href="https://www.twitch.tv/" target="_blank" style="color:white;">Trending Music Stream</a></strong>
-          <p style="font-size: 13px;">Join live music performances from top streamers.</p>
-        </div>
-        <div style="margin-bottom:10px;">
-          <strong><a href="https://www.youtube.com/" target="_blank" style="color:white;">Tech Reviews Live</a></strong>
-          <p style="font-size: 13px;">Watch the latest tech gadgets reviewed live.</p>
-        </div>
+        <div><strong><a href="https://www.twitch.tv" target="_blank" style="color:white;">Top Gaming Live</a></strong><p style="font-size: 13px;">Join live adventures now!</p></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Direct Message Users Container -->
+<div id="dmUsersContainer" style="display:none; position:fixed; top:50px; left:240px; width:250px; max-height:400px; overflow-y:auto; background:#36393f; padding:10px; border-radius:10px; z-index:40;">
+  <input type="text" id="searchUserInput" placeholder="Search user..." style="width:90%; padding:6px; margin-bottom:8px; border:none; border-radius:5px;"/>
+  <ul id="dmUsersList" style="list-style:none; padding:0; margin:0;"></ul>
+</div>
+
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getDatabase, ref, push, onChildAdded, set, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-// Firebase config
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyAF78wb9_OSrfPc93iaFmmNN-CZY03sJMQ",
   authDomain: "project-java0001.firebaseapp.com",
@@ -210,6 +300,9 @@ const db = getDatabase(app);
 
 // DOM Elements
 const loginModal = document.getElementById("loginModal");
+const usernamePrompt = document.getElementById("usernamePrompt");
+const newUsernameInput = document.getElementById("newUsername");
+const saveUsernameBtn = document.getElementById("saveUsername");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const messageP = document.getElementById("message");
@@ -218,37 +311,71 @@ const signupBtn = document.getElementById("signup");
 const appDiv = document.querySelector(".app");
 const logoutBtn = document.getElementById("logoutBtn");
 const usernameDisplay = document.getElementById("usernameDisplay");
+const profileImg = document.getElementById("profileImg");
 const sendBtn = document.getElementById("sendBtn");
 const input = document.getElementById("messageInput");
 const messages = document.querySelector(".messages");
+let currentUsername = "";
 
-// ✅ Set session persistence
+// Profile modal elements
+const profileDiv = document.querySelector(".profile");
+const profileModal = document.getElementById("profileModal");
+const profileModalUsername = document.getElementById("profileModalUsername");
+const profileModalEmail = document.getElementById("profileModalEmail");
+const profileModalImg = document.getElementById("profileModalImg");
+const profileNewUsernameInput = document.getElementById("profileNewUsername");
+const updateUsernameBtn = document.getElementById("updateUsernameBtn");
+const closeProfileModal = document.getElementById("closeProfileModal");
+
+// Set Persistence
 setPersistence(auth, browserSessionPersistence);
 
-// Auth
-onAuthStateChanged(auth, (user) => {
+// Auth State
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    loginModal.style.display = "none";
-    appDiv.style.display = "flex";
-    usernameDisplay.innerText = user.email;
+    const userRef = ref(db, 'users/' + user.uid);
+    const snap = await get(userRef);
+
+    if (snap.exists() && snap.val().username) {
+      currentUsername = snap.val().username;
+      usernameDisplay.innerText = currentUsername;
+      profileImg.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(currentUsername)}`;
+      loginModal.style.display = "none";
+      appDiv.style.display = "flex";
+    } else {
+      usernamePrompt.style.display = "flex";
+    }
   } else {
     loginModal.style.display = "flex";
     appDiv.style.display = "none";
   }
 });
 
+// Save Username
+saveUsernameBtn.addEventListener("click", async () => {
+  const username = newUsernameInput.value.trim();
+  const user = auth.currentUser;
+  if (!username || !user) return;
+
+  await set(ref(db, 'users/' + user.uid), {
+    email: user.email,
+    username: username
+  });
+
+  usernamePrompt.style.display = "none";
+  currentUsername = username;
+  usernameDisplay.innerText = username;
+  profileImg.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(username)}`;
+  loginModal.style.display = "none";
+  appDiv.style.display = "flex";
+});
+
 // Signup
 signupBtn.addEventListener("click", () => {
   const email = emailInput.value;
   const password = passwordInput.value;
-  messageP.innerText = "Creating account...";
-
   createUserWithEmailAndPassword(auth, email, password)
-    .then(userCredential => {
-      const user = userCredential.user;
-      set(ref(db, 'users/' + user.uid), { email });
-      messageP.innerText = "Account created!";
-    })
+    .then(() => { messageP.innerText = "Account created!"; })
     .catch(error => { messageP.innerText = error.message; });
 });
 
@@ -256,8 +383,6 @@ signupBtn.addEventListener("click", () => {
 loginBtn.addEventListener("click", () => {
   const email = emailInput.value;
   const password = passwordInput.value;
-  messageP.innerText = "Logging in...";
-
   signInWithEmailAndPassword(auth, email, password)
     .then(() => { messageP.innerText = "Login successful!"; })
     .catch(error => { messageP.innerText = error.message; });
@@ -270,12 +395,11 @@ logoutBtn.addEventListener("click", () => signOut(auth));
 const chatRef = ref(db, "messages");
 
 function sendMessage() {
-  const user = auth.currentUser ? auth.currentUser.email : "Anonymous";
   const text = input.value.trim();
   if (!text) return;
 
   const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  push(chatRef, { user, text, timestamp });
+  push(chatRef, { user: currentUsername || "Anonymous", text, timestamp });
   input.value = "";
 }
 
@@ -290,6 +414,132 @@ onChildAdded(chatRef, snapshot => {
   msg.innerHTML = `<strong>${msgData.user}:</strong> ${msgData.text} <span class="timestamp">${msgData.timestamp}</span>`;
   messages.appendChild(msg);
   messages.scrollTop = messages.scrollHeight;
+});
+
+// Open Profile Modal
+profileDiv.addEventListener("click", () => {
+  profileModal.style.display = "flex";
+  const user = auth.currentUser;
+  if(user){
+    profileModalUsername.innerText = currentUsername;
+    profileModalEmail.innerText = user.email;
+    profileModalImg.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(currentUsername)}`;
+  }
+});
+
+// Close Profile Modal
+closeProfileModal.addEventListener("click", () => profileModal.style.display = "none");
+
+// Update Username in Profile Modal
+updateUsernameBtn.addEventListener("click", async () => {
+  const newUsername = profileNewUsernameInput.value.trim();
+  const user = auth.currentUser;
+  if(!newUsername || !user) return;
+
+  await set(ref(db, 'users/' + user.uid), {
+    email: user.email,
+    username: newUsername
+  });
+
+  currentUsername = newUsername;
+  usernameDisplay.innerText = newUsername;
+  profileModalUsername.innerText = newUsername;
+  profileImg.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(newUsername)}`;
+  profileModalImg.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(newUsername)}`;
+  profileNewUsernameInput.value = "";
+  alert("Username updated!");
+});
+
+/* --- Direct Message Feature --- */
+const dmServer = document.querySelector(".servers li:last-child"); // 💬 Direct Message item
+const dmUsersContainer = document.getElementById("dmUsersContainer");
+const dmUsersList = document.getElementById("dmUsersList");
+const searchUserInput = document.getElementById("searchUserInput");
+let currentDMUserUid = null;
+
+dmServer.addEventListener("click", async () => {
+  dmUsersContainer.style.display = "block";
+  dmUsersList.innerHTML = '';
+  const usersRef = ref(db, 'users/');
+  const snapshot = await get(usersRef);
+  if(snapshot.exists()){
+    const users = snapshot.val();
+    Object.keys(users).forEach(uid => {
+      if(uid !== auth.currentUser.uid){
+        const li = document.createElement("li");
+        li.innerText = users[uid].username;
+        li.dataset.uid = uid;
+        li.style.cursor = "pointer";
+        li.style.padding = "6px";
+        li.style.borderRadius = "5px";
+        li.style.marginBottom = "4px";
+        li.addEventListener("click", () => openDirectMessage(uid, users[uid].username));
+        li.addEventListener("mouseover", () => li.style.background="#5865f2");
+        li.addEventListener("mouseout", () => li.style.background="transparent");
+        dmUsersList.appendChild(li);
+      }
+    });
+  }
+});
+
+searchUserInput.addEventListener("input", () => {
+  const filter = searchUserInput.value.toLowerCase();
+  Array.from(dmUsersList.children).forEach(li => {
+    li.style.display = li.innerText.toLowerCase().includes(filter) ? "" : "none";
+  });
+});
+
+function openDirectMessage(uid, username){
+  currentDMUserUid = uid;
+  messages.innerHTML = '';
+  document.querySelector(".chat-header h3").innerText = `DM with ${username}`;
+  dmUsersContainer.style.display = "none";
+
+  const conversationId = [auth.currentUser.uid, uid].sort().join("_");
+  const dmRef = ref(db, "direct_messages/" + conversationId);
+
+  onChildAdded(dmRef, snapshot => {
+    const msgData = snapshot.val();
+    const msg = document.createElement("div");
+    msg.classList.add("message");
+    msg.innerHTML = `<strong>${msgData.senderUid === auth.currentUser.uid ? "You" : username}:</strong> ${msgData.text} <span class="timestamp">${msgData.timestamp}</span>`;
+    messages.appendChild(msg);
+    messages.scrollTop = messages.scrollHeight;
+  });
+}
+
+// Override sendMessage to handle DMs
+const originalSendMessage = sendMessage;
+sendBtn.addEventListener("click", () => {
+  const text = input.value.trim();
+  if(!text) return;
+  const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  
+  if(currentDMUserUid){
+    const conversationId = [auth.currentUser.uid, currentDMUserUid].sort().join("_");
+    const dmRef = ref(db, "direct_messages/" + conversationId);
+    push(dmRef, { text, senderUid: auth.currentUser.uid, timestamp });
+    input.value = '';
+  } else {
+    originalSendMessage();
+  }
+});
+
+input.addEventListener("keypress", e => {
+  if(e.key==="Enter"){
+    const text = input.value.trim();
+    if(!text) return;
+    const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    
+    if(currentDMUserUid){
+      const conversationId = [auth.currentUser.uid, currentDMUserUid].sort().join("_");
+      const dmRef = ref(db, "direct_messages/" + conversationId);
+      push(dmRef, { text, senderUid: auth.currentUser.uid, timestamp });
+      input.value = '';
+    } else {
+      sendBtn.click();
+    }
+  }
 });
 </script>
 </body>
